@@ -51,7 +51,7 @@ app.post("/workflows/:actorId", async (req, res) => {
   res
     .status(200)
     .send(
-      "Event received. Issue a GET request to see the current workflow state"
+      "Event received. Issue a GET request to see the current workflow state",
     );
 });
 
@@ -83,14 +83,14 @@ app.post("/users", async (_req, res) => {
 });
 
 // Send events to an existing user
-app.post("/users/:actorId", async (req, res) => {
-  const { actorId } = req.params;
+app.post("/users/:userId", async (req, res) => {
+  const { userId } = req.params;
   const event = req.body;
 
   try {
     const { actor } = await getDurableActor({
       machine: userStateMachine,
-      actorId,
+      actorId: userId,
     });
     actor.send(event);
     res.status(200).send("Event received. Check user state.");
@@ -101,10 +101,10 @@ app.post("/users/:actorId", async (req, res) => {
 });
 
 // Get the current state of a user
-app.get("/users/:actorId", async (req, res) => {
-  const { actorId } = req.params;
+app.get("/users/:userId", async (req, res) => {
+  const { userId } = req.params;
   const persistedState = await collections.userStates?.findOne({
-    actorId,
+    actorId: userId,
   });
 
   if (!persistedState) {
